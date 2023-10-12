@@ -33,7 +33,7 @@ import static com.alibaba.nacos.common.notify.NotifyCenter.ringBufferSize;
 /**
  * The default event publisher implementation.
  *
- * <p>Internally, use {@link ArrayBlockingQueue <Event/>} as a message staging queue.
+ * <p>Internally, use {@link ArrayBlockingQueue} as a message staging queue.
  *
  * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
  * @author zongtanghu
@@ -56,8 +56,8 @@ public class DefaultPublisher extends Thread implements EventPublisher {
     
     protected volatile Long lastEventSequence = -1L;
     
-    private static final AtomicReferenceFieldUpdater<DefaultPublisher, Long> UPDATER = AtomicReferenceFieldUpdater
-            .newUpdater(DefaultPublisher.class, Long.class, "lastEventSequence");
+    private static final AtomicReferenceFieldUpdater<DefaultPublisher, Long> UPDATER =
+            AtomicReferenceFieldUpdater.newUpdater(DefaultPublisher.class, Long.class, "lastEventSequence");
     
     @Override
     public void init(Class<? extends Event> type, int bufferSize) {
@@ -190,13 +190,20 @@ public class DefaultPublisher extends Thread implements EventPublisher {
             notifySubscriber(subscriber, event);
         }
     }
-    
+
+    /**
+     * 通知订阅者
+     *
+     * @param subscriber {@link Subscriber}     订阅
+     * @param event      {@link Event}          事件
+     */
     @Override
     public void notifySubscriber(final Subscriber subscriber, final Event event) {
         
         LOGGER.debug("[NotifyCenter] the {} will received by {}", event, subscriber);
-        
+
         final Runnable job = () -> subscriber.onEvent(event);
+
         final Executor executor = subscriber.executor();
         
         if (executor != null) {

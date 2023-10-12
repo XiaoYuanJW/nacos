@@ -26,9 +26,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Cache builder.
+ * 缓存构造器 Cache builder.
+ *
  * @author zzq
- * @date 2021/7/30
+ * @since 2021/7/30
  */
 public class CacheBuilder<K, V> {
     

@@ -51,7 +51,15 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
     public EphemeralClientOperationServiceImpl(ClientManagerDelegate clientManager) {
         this.clientManager = clientManager;
     }
-    
+
+    /**
+     * 永久实例注册
+     *
+     * @param service  service
+     * @param instance instance
+     * @param clientId id of client
+     * @throws NacosException
+     */
     @Override
     public void registerInstance(Service service, Instance instance, String clientId) throws NacosException {
         NamingUtils.checkInstanceIsLegal(instance);
@@ -71,8 +79,7 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
         client.setLastUpdatedTime();
         client.recalculateRevision();
         NotifyCenter.publishEvent(new ClientOperationEvent.ClientRegisterServiceEvent(singleton, clientId));
-        NotifyCenter
-                .publishEvent(new MetadataEvent.InstanceMetadataEvent(singleton, instanceInfo.getMetadataId(), false));
+        NotifyCenter.publishEvent(new MetadataEvent.InstanceMetadataEvent(singleton, instanceInfo.getMetadataId(), false));
     }
     
     @Override

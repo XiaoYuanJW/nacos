@@ -58,16 +58,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,12 +95,24 @@ public class InstanceControllerV2 {
         checkWeight(instanceForm.getWeight());
         // build instance
         Instance instance = buildInstance(instanceForm);
-        instanceServiceV2.registerInstance(instanceForm.getNamespaceId(), buildCompositeServiceName(instanceForm),
-                instance);
+
+        instanceServiceV2.registerInstance(
+                instanceForm.getNamespaceId(),
+                buildCompositeServiceName(instanceForm),
+                instance
+        );
+
         NotifyCenter.publishEvent(
-                new RegisterInstanceTraceEvent(System.currentTimeMillis(), "", false, instanceForm.getNamespaceId(),
-                        instanceForm.getGroupName(), instanceForm.getServiceName(), instance.getIp(),
-                        instance.getPort()));
+                new RegisterInstanceTraceEvent(
+                        System.currentTimeMillis(),
+                        "",
+                        false,
+                        instanceForm.getNamespaceId(),
+                        instanceForm.getGroupName(),
+                        instanceForm.getServiceName(),
+                        instance.getIp(),
+                        instance.getPort())
+        );
         return Result.success("ok");
     }
     
@@ -423,20 +426,38 @@ public class InstanceControllerV2 {
                             + com.alibaba.nacos.naming.constants.Constants.MAX_WEIGHT_VALUE);
         }
     }
-    
+
+    /**
+     * 构建 Instance 对象
+     *
+     * @param instanceForm
+     * @return
+     * @throws NacosException
+     */
     private Instance buildInstance(InstanceForm instanceForm) throws NacosException {
-        Instance instance = InstanceBuilder.newBuilder().setServiceName(buildCompositeServiceName(instanceForm))
-                .setIp(instanceForm.getIp()).setClusterName(instanceForm.getClusterName())
-                .setPort(instanceForm.getPort()).setHealthy(instanceForm.getHealthy())
-                .setWeight(instanceForm.getWeight()).setEnabled(instanceForm.getEnabled())
+        Instance instance = InstanceBuilder.newBuilder()
+                .setServiceName(buildCompositeServiceName(instanceForm))
+                .setIp(instanceForm.getIp())
+                .setClusterName(instanceForm.getClusterName())
+                .setPort(instanceForm.getPort())
+                .setHealthy(instanceForm.getHealthy())
+                .setWeight(instanceForm.getWeight())
+                .setEnabled(instanceForm.getEnabled())
                 .setMetadata(UtilsAndCommons.parseMetadata(instanceForm.getMetadata()))
-                .setEphemeral(instanceForm.getEphemeral()).build();
+                .setEphemeral(instanceForm.getEphemeral())
+                .build();
         if (instanceForm.getEphemeral() == null) {
             instance.setEphemeral((switchDomain.isDefaultInstanceEphemeral()));
         }
         return instance;
     }
-    
+
+    /**
+     * 实例名称：groupName + @@ + serviceName
+     *
+     * @param instanceForm  实例参数
+     * @return
+     */
     private String buildCompositeServiceName(InstanceForm instanceForm) {
         return NamingUtils.getGroupedName(instanceForm.getServiceName(), instanceForm.getGroupName());
     }

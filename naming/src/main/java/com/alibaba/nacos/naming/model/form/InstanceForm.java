@@ -34,16 +34,16 @@ import java.util.Objects;
 public class InstanceForm implements Serializable {
     
     private static final long serialVersionUID = -3760300561436525429L;
-    
+
     private String namespaceId;
     
     private String groupName;
+
+    private String clusterName;
     
     private String serviceName;
     
     private String ip;
-    
-    private String clusterName;
     
     private Integer port;
     
@@ -212,9 +212,7 @@ public class InstanceForm implements Serializable {
     
     @Override
     public int hashCode() {
-        return Objects
-                .hash(namespaceId, groupName, serviceName, ip, clusterName, port, healthy, weight, enabled, metadata,
-                        ephemeral);
+        return Objects.hash(namespaceId, groupName, serviceName, ip, clusterName, port, healthy, weight, enabled, metadata, ephemeral);
     }
     
     @Override

@@ -45,7 +45,8 @@ public class ClientOperationServiceProxy implements ClientOperationService {
     
     private final ClientOperationService persistentClientOperationService;
     
-    public ClientOperationServiceProxy(EphemeralClientOperationServiceImpl ephemeralClientOperationService,
+    public ClientOperationServiceProxy(
+            EphemeralClientOperationServiceImpl ephemeralClientOperationService,
             PersistentClientOperationServiceImpl persistentClientOperationService) {
         this.ephemeralClientOperationService = ephemeralClientOperationService;
         this.persistentClientOperationService = persistentClientOperationService;
@@ -84,7 +85,13 @@ public class ClientOperationServiceProxy implements ClientOperationService {
         // Subscriber is an ephemeral type only, so call ephemeral client directly
         ephemeralClientOperationService.unsubscribeService(service, subscriber, clientId);
     }
-    
+
+    /**
+     * 根据实例是否为永久实例选择 ClientOperationService 的具体实现
+     *
+     * @param instance
+     * @return
+     */
     private ClientOperationService chooseClientOperationService(final Instance instance) {
         return instance.isEphemeral() ? ephemeralClientOperationService : persistentClientOperationService;
     }

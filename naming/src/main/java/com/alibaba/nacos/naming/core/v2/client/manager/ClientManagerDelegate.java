@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
+ * ClientManager 委托类
  * Client manager delegate.
  *
  * @author xiweng.yy
@@ -45,9 +46,11 @@ public class ClientManagerDelegate implements ClientManager {
     
     private final PersistentIpPortClientManager persistentIpPortClientManager;
     
-    public ClientManagerDelegate(ConnectionBasedClientManager connectionBasedClientManager,
+    public ClientManagerDelegate(
+            ConnectionBasedClientManager connectionBasedClientManager,
             EphemeralIpPortClientManager ephemeralIpPortClientManager,
-            PersistentIpPortClientManager persistentIpPortClientManager) {
+            PersistentIpPortClientManager persistentIpPortClientManager
+    ) {
         this.connectionBasedClientManager = connectionBasedClientManager;
         this.ephemeralIpPortClientManager = ephemeralIpPortClientManager;
         this.persistentIpPortClientManager = persistentIpPortClientManager;
@@ -55,7 +58,8 @@ public class ClientManagerDelegate implements ClientManager {
     
     @Override
     public boolean clientConnected(String clientId, ClientAttributes attributes) {
-        return getClientManagerById(clientId).clientConnected(clientId, attributes);
+        return getClientManagerById(clientId)
+                .clientConnected(clientId, attributes);
     }
     
     @Override
@@ -80,7 +84,8 @@ public class ClientManagerDelegate implements ClientManager {
     
     @Override
     public boolean contains(String clientId) {
-        return connectionBasedClientManager.contains(clientId) || ephemeralIpPortClientManager.contains(clientId)
+        return connectionBasedClientManager.contains(clientId) ||
+                ephemeralIpPortClientManager.contains(clientId)
                 || persistentIpPortClientManager.contains(clientId);
     }
     
@@ -100,16 +105,31 @@ public class ClientManagerDelegate implements ClientManager {
     
     @Override
     public boolean verifyClient(DistroClientVerifyInfo verifyData) {
-        return getClientManagerById(verifyData.getClientId()).verifyClient(verifyData);
+        return getClientManagerById(verifyData.getClientId())
+                .verifyClient(verifyData);
     }
-    
+
+    /**
+     * 根据 ClientId 选择不同的 ClientManager 实现
+     *
+     * @param clientId
+     * @return
+     */
     private ClientManager getClientManagerById(String clientId) {
         if (isConnectionBasedClient(clientId)) {
             return connectionBasedClientManager;
         }
-        return clientId.endsWith(ClientConstants.PERSISTENT_SUFFIX) ? persistentIpPortClientManager : ephemeralIpPortClientManager;
+        return clientId.endsWith(ClientConstants.PERSISTENT_SUFFIX) ?
+                persistentIpPortClientManager : ephemeralIpPortClientManager;
     }
-    
+
+    /**
+     * 判断是否是 connectionBasedClientManager
+     * clientId 是否包含 IpPortBasedClient.ID_DELIMITER（#）
+     *
+     * @param clientId
+     * @return
+     */
     private boolean isConnectionBasedClient(String clientId) {
         return !clientId.contains(IpPortBasedClient.ID_DELIMITER);
     }

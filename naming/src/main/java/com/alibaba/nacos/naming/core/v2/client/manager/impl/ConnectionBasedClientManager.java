@@ -46,7 +46,8 @@ import java.util.concurrent.TimeUnit;
  * @author xiweng.yy
  */
 @Component("connectionBasedClientManager")
-public class ConnectionBasedClientManager extends ClientConnectionEventListener implements ClientManager {
+public class ConnectionBasedClientManager extends ClientConnectionEventListener
+        implements ClientManager {
     
     private final ConcurrentMap<String, ConnectionBasedClient> clients = new ConcurrentHashMap<>();
     
